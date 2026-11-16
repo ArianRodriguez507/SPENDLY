@@ -24,41 +24,60 @@ def main(page: ft.Page):
 
     page.title = "Spendly"
     page.theme_mode = ft.ThemeMode.LIGHT
+    page.bgcolor = "#FFD6E7"
     page.padding = 20
 
     transactions = load_data()
 
     title = ft.Text(
-        "💰 Spendly Budget Tracker",
-        size=30,
+        "💰 SPENDLY",
+        size=40,
         weight=ft.FontWeight.BOLD,
+        color="#C2185B",
+    )
+
+    subtitle = ft.Text(
+        "Manage your money smarter with Spendly",
+        size=16,
+        color=ft.Colors.GREY,
     )
 
     balance_text = ft.Text(
-        "Balance: $0.00",
-        size=22,
+        "$0.00",
+        size=24,
         weight=ft.FontWeight.BOLD,
     )
 
-    message = ft.Text(
-        "",
+    income_text = ft.Text(
+        "$0.00",
+        size=24,
+        weight=ft.FontWeight.BOLD,
+        color=ft.Colors.GREEN,
+    )
+
+    expense_text = ft.Text(
+        "$0.00",
+        size=24,
+        weight=ft.FontWeight.BOLD,
         color=ft.Colors.RED,
     )
 
+    message = ft.Text("", color=ft.Colors.RED)
+
     description = ft.TextField(
         label="Description",
-        width=250,
+        width=280,
     )
 
     amount = ft.TextField(
         label="Amount",
-        width=150,
+        width=180,
         keyboard_type=ft.KeyboardType.NUMBER,
     )
 
     category = ft.Dropdown(
         label="Category",
-        width=220,
+        width=280,
         value="Other",
         options=[
             ft.dropdown.Option("Food"),
@@ -69,12 +88,11 @@ def main(page: ft.Page):
         ],
     )
 
-    dark_mode = ft.Switch(
-        label="Dark Mode"
-    )
+    dark_mode = ft.Switch(label="Dark Mode")
 
     transaction_list = ft.Column(
-        scroll=ft.ScrollMode.AUTO
+        scroll=ft.ScrollMode.AUTO,
+        spacing=10,
     )
 
     def update_balance():
@@ -84,9 +102,23 @@ def main(page: ft.Page):
             for item in transactions
         )
 
-        balance_text.value = (
-            f"Balance: ${total:.2f}"
+        income = sum(
+            item["amount"]
+            for item in transactions
+            if item["amount"] > 0
         )
+
+        expenses = abs(
+            sum(
+                item["amount"]
+                for item in transactions
+                if item["amount"] < 0
+            )
+        )
+
+        balance_text.value = f"${total:.2f}"
+        income_text.value = f"${income:.2f}"
+        expense_text.value = f"${expenses:.2f}"
 
         if total > 0:
             balance_text.color = ft.Colors.GREEN
@@ -101,7 +133,18 @@ def main(page: ft.Page):
 
         for item in transactions:
 
-            color = (
+            if item["category"] == "Food":
+                icon_color = ft.Colors.ORANGE
+            elif item["category"] == "Transport":
+                icon_color = ft.Colors.BLUE
+            elif item["category"] == "School":
+                icon_color = ft.Colors.PURPLE
+            elif item["category"] == "Entertainment":
+                icon_color = ft.Colors.PINK
+            else:
+                icon_color = ft.Colors.GREY
+
+            amount_color = (
                 ft.Colors.GREEN
                 if item["amount"] >= 0
                 else ft.Colors.RED
@@ -111,17 +154,13 @@ def main(page: ft.Page):
                 ft.ListTile(
                     leading=ft.Icon(
                         ft.Icons.PAYMENTS,
-                        color=color,
+                        color=icon_color,
                     ),
-                    title=ft.Text(
-                        item["description"]
-                    ),
-                    subtitle=ft.Text(
-                        item["category"]
-                    ),
+                    title=ft.Text(item["description"]),
+                    subtitle=ft.Text(item["category"]),
                     trailing=ft.Text(
                         f"${item['amount']:.2f}",
-                        color=color,
+                        color=amount_color,
                     ),
                 )
             )
@@ -130,129 +169,135 @@ def main(page: ft.Page):
         page.update()
 
     def clear_fields():
-
         description.value = ""
         amount.value = ""
 
     def add_income(e):
-
-        if not description.value:
-            message.value = (
-                "Please enter a description."
-            )
-            page.update()
-            return
-
         try:
 
             value = float(amount.value)
 
             transactions.append(
                 {
-                    "description":
-                    description.value,
+                    "description": description.value,
                     "amount": value,
-                    "category":
-                    category.value,
+                    "category": category.value,
                 }
             )
 
             save_data(transactions)
 
             clear_fields()
-
             message.value = ""
 
             refresh_transactions()
 
-        except ValueError:
-
-            message.value = (
-                "Enter a valid amount."
-            )
-
+        except:
+            message.value = "Enter a valid amount."
             page.update()
 
     def add_expense(e):
-
-        if not description.value:
-            message.value = (
-                "Please enter a description."
-            )
-            page.update()
-            return
-
         try:
 
             value = float(amount.value)
 
             transactions.append(
                 {
-                    "description":
-                    description.value,
+                    "description": description.value,
                     "amount": -value,
-                    "category":
-                    category.value,
+                    "category": category.value,
                 }
             )
 
             save_data(transactions)
 
             clear_fields()
-
             message.value = ""
 
             refresh_transactions()
 
-        except ValueError:
-
-            message.value = (
-                "Enter a valid amount."
-            )
-
+        except:
+            message.value = "Enter a valid amount."
             page.update()
 
-    def change_theme(e):
+    def clear_history(e):
 
-        if dark_mode.value:
-            page.theme_mode = (
-                ft.ThemeMode.DARK
-            )
-        else:
-            page.theme_mode = (
-                ft.ThemeMode.LIGHT
-            )
+        transactions.clear()
 
-        page.update()
+        save_data(transactions)
 
-    dark_mode.on_change = change_theme
+        refresh_transactions()
 
-    income_button = ft.Button(
-        "Add Income",
-        bgcolor=ft.Colors.GREEN,
-        color=ft.Colors.WHITE,
-        on_click=add_income,
+    income_card = ft.Container(
+        content=ft.Column(
+            [
+                ft.Text("💵 Income"),
+                income_text,
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        ),
+        bgcolor="#D4F8D4",
+        border_radius=15,
+        padding=15,
+        width=180,
     )
 
-    expense_button = ft.Button(
-        "Add Expense",
-        bgcolor=ft.Colors.RED,
-        color=ft.Colors.WHITE,
-        on_click=add_expense,
+    expense_card = ft.Container(
+        content=ft.Column(
+            [
+                ft.Text("💸 Expenses"),
+                expense_text,
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        ),
+        bgcolor="#FFD6D6",
+        border_radius=15,
+        padding=15,
+        width=180,
     )
 
-    page.add(
-        ft.Column(
+    balance_card = ft.Container(
+        content=ft.Column(
+            [
+                ft.Text("💰 Balance"),
+                balance_text,
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        ),
+        bgcolor="#D6E4FF",
+        border_radius=15,
+        padding=15,
+        width=180,
+    )
+
+    main_card = ft.Container(
+        width=800,
+        bgcolor="#FFF0F6",
+        border_radius=30,
+        padding=30,
+        content=ft.Column(
             [
                 title,
-                balance_text,
+                subtitle,
                 dark_mode,
+
+                ft.Row(
+                    [
+                        balance_card,
+                        income_card,
+                        expense_card,
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+
+                ft.Divider(),
 
                 ft.Row(
                     [
                         description,
                         amount,
-                    ]
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
                 ),
 
                 category,
@@ -261,21 +306,74 @@ def main(page: ft.Page):
 
                 ft.Row(
                     [
-                        income_button,
-                        expense_button,
-                    ]
+                        ft.Button(
+                            "💵 Add Income",
+                            bgcolor=ft.Colors.GREEN,
+                            color=ft.Colors.WHITE,
+                            on_click=add_income,
+                        ),
+
+                        ft.Button(
+                            "💸 Add Expense",
+                            bgcolor=ft.Colors.RED,
+                            color=ft.Colors.WHITE,
+                            on_click=add_expense,
+                        ),
+
+                        ft.Button(
+                            "🗑 Clear History",
+                            bgcolor=ft.Colors.ORANGE,
+                            color=ft.Colors.WHITE,
+                            on_click=clear_history,
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
                 ),
 
                 ft.Divider(),
 
                 ft.Text(
-                    "Transaction History",
+                    "📋 Transaction History",
                     size=20,
                     weight=ft.FontWeight.BOLD,
                 ),
 
                 transaction_list,
-            ]
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        ),
+    )
+
+    def change_theme(e):
+
+        if dark_mode.value:
+
+            page.theme_mode = ft.ThemeMode.DARK
+
+            page.bgcolor = "#1A1A1A"
+            main_card.bgcolor = "#2D2D2D"
+
+            title.color = "#F48FB1"
+            subtitle.color = ft.Colors.WHITE
+
+        else:
+
+            page.theme_mode = ft.ThemeMode.LIGHT
+
+            page.bgcolor = "#FFD6E7"
+            main_card.bgcolor = "#FFF0F6"
+
+            title.color = "#C2185B"
+            subtitle.color = ft.Colors.GREY
+
+        page.update()
+
+    dark_mode.on_change = change_theme
+
+    page.add(
+        ft.Row(
+            [main_card],
+            alignment=ft.MainAxisAlignment.CENTER,
         )
     )
 

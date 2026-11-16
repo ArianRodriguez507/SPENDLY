@@ -1,7 +1,12 @@
 [
     {
-        "description": "comida",
-        "amount": 200.0,
+        "description": "comida de ariel",
+        "amount": -10.0,
         "category": "Food"
+    },
+    {
+        "description": "cobro de arendamiento",
+        "amount": 200.0,
+        "category": "Other"
     }
 ]
