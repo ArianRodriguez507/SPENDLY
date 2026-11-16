@@ -337,7 +337,14 @@ def main(page: ft.Page):
                     size=20,
                     weight=ft.FontWeight.BOLD,
                 ),
-
+                ft.Container(
+                    content=transaction_list,
+                    height=300,
+                    width=700,
+                    padding=10,
+                    border_radius=10,
+                    bgcolor="#FFFFFF",
+                ),
                 transaction_list,
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,

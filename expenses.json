@@ -1,12 +1,32 @@
 [
     {
-        "description": "comida de ariel",
-        "amount": -10.0,
+        "description": "ff",
+        "amount": 100.0,
+        "category": "Transport"
+    },
+    {
+        "description": "der",
+        "amount": -23.0,
         "category": "Food"
     },
     {
-        "description": "cobro de arendamiento",
-        "amount": 200.0,
+        "description": "2324",
+        "amount": 100.0,
+        "category": "School"
+    },
+    {
+        "description": "gato",
+        "amount": -100.0,
+        "category": "Entertainment"
+    },
+    {
+        "description": "comida",
+        "amount": -300.0,
+        "category": "Other"
+    },
+    {
+        "description": "ffu",
+        "amount": 300.0,
         "category": "Other"
     }
 ]
