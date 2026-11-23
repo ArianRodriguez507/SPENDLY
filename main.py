@@ -66,7 +66,7 @@ def main(page: ft.Page):
 
     description = ft.TextField(
         label="Description",
-        width=280,
+        width=180,
     )
 
     amount = ft.TextField(
@@ -77,7 +77,7 @@ def main(page: ft.Page):
 
     category = ft.Dropdown(
         label="Category",
-        width=280,
+        width=180,
         value="Other",
         options=[
             ft.dropdown.Option("Food"),
@@ -231,7 +231,7 @@ def main(page: ft.Page):
     income_card = ft.Container(
         content=ft.Column(
             [
-                ft.Text("💵 Income"),
+                ft.Text("Income"),
                 income_text,
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -245,7 +245,7 @@ def main(page: ft.Page):
     expense_card = ft.Container(
         content=ft.Column(
             [
-                ft.Text("💸 Expenses"),
+                ft.Text("Expenses"),
                 expense_text,
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -259,7 +259,7 @@ def main(page: ft.Page):
     balance_card = ft.Container(
         content=ft.Column(
             [
-                ft.Text("💰 Balance"),
+                ft.Text(" Balance"),
                 balance_text,
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -307,21 +307,21 @@ def main(page: ft.Page):
                 ft.Row(
                     [
                         ft.Button(
-                            "💵 Add Income",
+                            "Add Income",
                             bgcolor=ft.Colors.GREEN,
                             color=ft.Colors.WHITE,
                             on_click=add_income,
                         ),
 
                         ft.Button(
-                            "💸 Add Expense",
+                            "Add Expense",
                             bgcolor=ft.Colors.RED,
                             color=ft.Colors.WHITE,
                             on_click=add_expense,
                         ),
 
                         ft.Button(
-                            "🗑 Clear History",
+                            "Clear History",
                             bgcolor=ft.Colors.ORANGE,
                             color=ft.Colors.WHITE,
                             on_click=clear_history,
@@ -333,7 +333,7 @@ def main(page: ft.Page):
                 ft.Divider(),
 
                 ft.Text(
-                    "📋 Transaction History",
+                    "Transaction History",
                     size=20,
                     weight=ft.FontWeight.BOLD,
                 ),
